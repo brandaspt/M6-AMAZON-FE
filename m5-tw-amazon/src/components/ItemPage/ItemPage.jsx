@@ -1,50 +1,76 @@
-import { Container, Row, Col, Card } from "react-bootstrap"
+import { Container, Row, Col, Card, Form, Button } from "react-bootstrap"
 import { useRouteMatch } from "react-router"
 import styles from "./itempage.module.css"
+import { useEffect, useState } from "react"
 
 const ItemPage = (props) => {
   const match = useRouteMatch()
 
+  const [product, setProduct] = useState(null)
+  const [reviews, setReviews] = useState(null)
+
+  useEffect(() => {
+    fetchProduct()
+    fetchReviews()
+  }, [])
+
+  const fetchProduct = async () => {
+    const response = await fetch(
+      `http://localhost:4444/products/${match.params.id}`
+    )
+    if (response.ok) {
+      const data = await response.json()
+      setProduct(data)
+    } else {
+      console.log("error fetching product")
+    }
+  }
+
+  const fetchReviews = async () => {
+    const response = await fetch(
+      `http://localhost:4444/products/${match.params.id}/review`
+    )
+    if (response.ok) {
+      const data = await response.json()
+      setReviews(data)
+    } else {
+      console.log("error fetching product")
+    }
+  }
+
   return (
     <Container>
-      <Row className={styles.itemRow}>
-        <Col xs={12} md={6} className={styles.imgCol}>
-          <img
-            src="https://www.image-engineering.de/content/library/technotes/2018_03_05/Formate_Video.jpg"
-            alt=""
-          />
-        </Col>
-        <Col xs={12} md={6}>
-          <h3>
-            Colgate Max White One Whitening Toothpaste, 5 Pack of Cavity
-            Protection Fluoride Formula for Whiter Teeth, Bulk/Value Set - 5 x
-            75 ml
-          </h3>
-          <div className="d-flex justify-content-between pr-3">
-            <div>Brand: Nokia</div>
-            <div>Category: Smartphones</div>
-          </div>
-          <div>Price: 100$</div>
-          <div>
-            Some very long deeeeeeeeeeeeeeeee eeeeeeeeeeee eeeeeeee
-            eeeeeeeeeeeeeeeeeeee eeeeee eeeeeeeeeeescription nnnnnnnnnnnn
-            nnnnnnnnnn nnnnnnnnnnnnnnn nnnnnnnnnn nnnnnnnnn
-          </div>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <div>
-            <h2 className="text-center mt-3">Reviews</h2>
-            <ReviewCard />
-            <ReviewCard />
-            <ReviewCard />
-            <ReviewCard />
-            <ReviewCard />
-            <ReviewCard />
-          </div>
-        </Col>
-      </Row>
+      {product && (
+        <>
+          <Row className={styles.itemRow}>
+            <Col xs={12} md={6} className={styles.imgCol}>
+              <img
+                src="https://www.image-engineering.de/content/library/technotes/2018_03_05/Formate_Video.jpg"
+                alt=""
+              />
+            </Col>
+            <Col xs={12} md={6}>
+              <h3>{product.productName}</h3>
+              <div className="d-flex justify-content-between pr-3">
+                <div>Brand: {product.brand}</div>
+                <div>Category: {product.category}</div>
+              </div>
+              <div>Price: {product.price}$</div>
+              <div>{product.description}</div>
+            </Col>
+          </Row>
+          <Row className={styles.comments}>
+            <Col>
+              <div>
+                <h2 className="text-center mt-3">Reviews</h2>
+                {reviews &&
+                  reviews.map((r) => <ReviewCard key={r._id} {...r} />)}
+                <AddReview productId={product._id} refresh={fetchReviews} />
+              </div>
+            </Col>
+          </Row>
+        </>
+      )}
     </Container>
   )
 }
@@ -55,9 +81,71 @@ const ReviewCard = (props) => {
   return (
     <Card className={styles.reviewCard}>
       <Card.Body className="d-flex">
-        <div>This is some text within a card body.</div>
-        <div className="ml-auto">Rate: 4/5</div>
+        <div>{props.comment}</div>
+        <div className="ml-auto">Rate: {props.rate}/5</div>
       </Card.Body>
     </Card>
+  )
+}
+
+const AddReview = (props) => {
+  const [comment, setComment] = useState({ comment: "", rate: 1 })
+
+  const changeData = (e) => {
+    setComment({ ...comment, [e.target.id]: e.target.value })
+  }
+
+  const postReview = async () => {
+    const response = await fetch(
+      `http://localhost:4444/products/${props.productId}/review`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(comment),
+      }
+    )
+    if (response.ok) {
+      const data = await response.json()
+      console.log(data)
+      props.refresh()
+    } else {
+      console.log("error posting review")
+    }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    await postReview()
+  }
+
+  return (
+    <Form onSubmit={(e) => handleSubmit(e)}>
+      <Row className={styles.addCommRow}>
+        <Col xs={12} md={9}>
+          <Form.Control
+            placeholder="Your comment"
+            id="comment"
+            value={comment.comment}
+            onChange={(e) => changeData(e)}
+          />
+        </Col>
+        <Col xs={6} md={1}>
+          <Form.Control
+            type="number"
+            id="rate"
+            placeholder={1}
+            min={1}
+            max={5}
+            value={comment.rate}
+            onChange={(e) => changeData(e)}
+          />
+        </Col>
+        <Col xs={6} md={2} className="d-flex justify-content-end">
+          <Button type="submit">Add Comment</Button>
+        </Col>
+      </Row>
+    </Form>
   )
 }

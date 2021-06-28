@@ -2,13 +2,15 @@ import { Container, Form, Col, Button } from "react-bootstrap"
 import { useParams } from "react-router"
 import styles from "./newedititem.module.css"
 import { useEffect, useState } from "react"
+import { useHistory } from "react-router-dom"
 
 const NewEditItem = (props) => {
   const params = useParams()
+  const history = useHistory()
 
   const [addProduct, setAddProduct] = useState(null)
   const [form, setForm] = useState({
-    name: "",
+    productName: "",
     price: "",
     category: "",
     brand: "",
@@ -21,8 +23,19 @@ const NewEditItem = (props) => {
 
   useEffect(() => {
     if (!addProduct) {
+      fetchProduct()
     }
   }, [addProduct])
+
+  const fetchProduct = async () => {
+    const response = await fetch(`http://localhost:4444/products/${params.id}`)
+    if (response.ok) {
+      const data = await response.json()
+      setForm(data)
+    } else {
+      console.log("error fetching product")
+    }
+  }
 
   useEffect(() => {
     Object.keys(params).length === 0
@@ -30,13 +43,56 @@ const NewEditItem = (props) => {
       : setAddProduct(false)
   }, [])
 
+  const putProduct = async () => {
+    const response = await fetch(
+      `http://localhost:4444/products/${params.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      }
+    )
+    if (response.ok) {
+      const data = await response.json()
+    } else {
+      console.log("error putting product")
+    }
+  }
+
+  const postProduct = async () => {
+    const response = await fetch("http://localhost:4444/products", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    })
+    if (response.ok) {
+      const data = await response.json()
+    } else {
+      console.log("error posting product")
+    }
+  }
+
+  const handlePostPut = async (e) => {
+    e.preventDefault()
+    if (addProduct) {
+      await postProduct()
+    } else {
+      await putProduct()
+    }
+    history.goBack()
+  }
+
   return (
     <Container>
       <div className={styles.form}>
         <h1 className={styles.heading}>
           {addProduct ? "Add Product" : "Edit Product"}
         </h1>
-        <Form>
+        <Form onSubmit={(e) => handlePostPut(e)}>
           <Form.Row>
             <Col xs={1}>
               <Form.Group controlId="price">
@@ -53,11 +109,11 @@ const NewEditItem = (props) => {
               </Form.Group>
             </Col>
             <Col xs={11}>
-              <Form.Group controlId="name">
+              <Form.Group controlId="productName">
                 <Form.Label>Product Name</Form.Label>
                 <Form.Control
                   placeholder="Mobile phone 3310"
-                  value={form.name}
+                  value={form.productName}
                   onChange={(e) => changeForm(e)}
                 />
               </Form.Group>
@@ -95,7 +151,9 @@ const NewEditItem = (props) => {
               onChange={(e) => changeForm(e)}
             />
           </Form.Group>
-          <Button type="submit">Add Product</Button>
+          <Button type="submit">
+            {addProduct ? "Add Product" : "Edit Product"}
+          </Button>
         </Form>
       </div>
     </Container>

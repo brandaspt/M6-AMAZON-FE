@@ -2,8 +2,25 @@ import { Container, Row } from "react-bootstrap"
 import ItemCard from "./ItemCard"
 import styles from "./cardSection.module.css"
 import { Link } from "react-router-dom"
+import { useState, useEffect } from "react"
 
 const CardSection = (props) => {
+  const [products, setProducts] = useState([])
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = async () => {
+    const response = await fetch("http://localhost:4444/products")
+    if (response.ok) {
+      const data = await response.json()
+      setProducts(data)
+    } else {
+      console.log("error occured")
+    }
+  }
+
   return (
     <div>
       <div className={`${styles.topbar} d-flex align-items-center`}>
@@ -15,16 +32,10 @@ const CardSection = (props) => {
       </div>
       <Container>
         <Row className={styles.itemRow}>
-          {["1", "1", "1", "1", "1"].map((i) => (
-            <ItemCard
-              name="3310"
-              description="asdsadasdasdasdasdasd"
-              brand="Nokia"
-              price={100}
-              category="smartphones"
-              _id="1"
-            />
-          ))}
+          {products.length !== 0 &&
+            products.map((p) => (
+              <ItemCard key={p._id} {...p} refresh={fetchProducts} />
+            ))}
         </Row>
       </Container>
     </div>

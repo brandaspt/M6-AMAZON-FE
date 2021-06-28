@@ -6,17 +6,35 @@ import BtnEditDelete from "./../BtnsEditDelete/BtnEditDelete"
 const ItemCard = (props) => {
   const urlHistory = useHistory()
 
+  const deleteItem = async () => {
+    const response = await fetch(
+      `http://localhost:4444/products/${props._id}`,
+      {
+        method: "DELETE",
+      }
+    )
+    if (response.ok) {
+      props.refresh()
+    } else {
+      console.log("error deleting")
+    }
+  }
+
   return (
     <Col xs={12} sm={6} md={4} lg={3}>
       <Link to={`/product/${props._id}`} className={styles.cardLink}>
         <Card className={styles.card}>
           <Card.Img
             variant="top"
-            src="https://m.media-amazon.com/images/I/71-6UDNkL4L._AC_UL480_FMwebp_QL65_.jpg"
+            src={
+              props.cover
+                ? props.cover
+                : "https://m.media-amazon.com/images/I/71-6UDNkL4L._AC_UL480_FMwebp_QL65_.jpg"
+            }
           />
           <Card.Body>
             <Card.Title className={styles.cardTitle}>
-              <span>{props.brand}</span> {props.name}
+              <span>{props.brand}</span> {props.productName}
             </Card.Title>
             <Card.Text className={styles.cardCategory}>
               <span>Category:</span> {props.category}
@@ -38,6 +56,7 @@ const ItemCard = (props) => {
                 type="delete"
                 callback={(e) => {
                   e.preventDefault()
+                  deleteItem()
                 }}
               />
             </div>
