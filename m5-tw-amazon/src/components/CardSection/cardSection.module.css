@@ -1,0 +1,62 @@
+.itemRow {
+  margin-top: 20px;
+}
+
+.card {
+  border: none;
+  border-bottom: rgb(221, 221, 221) solid 2px;
+  margin-bottom: 30px;
+}
+
+.cardLink:hover {
+  text-decoration: none;
+}
+
+.card img {
+  width: 100%;
+  height: 275px;
+  object-fit: cover;
+  padding: 0;
+  margin-bottom: 10px;
+}
+
+.card > div {
+  padding: 0;
+}
+
+.card > div > div {
+  margin-bottom: 0;
+}
+
+.cardCategory {
+  color: rgb(86, 89, 89);
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.cardCategory span {
+  font-weight: 500;
+}
+
+.cardTitle {
+  color: black;
+}
+
+.cardTitle span {
+  font-weight: 700;
+}
+
+.cardPrice {
+  margin-bottom: 25px !important;
+  color: black;
+}
+
+.desc {
+  color: black;
+}
+
+.topbar {
+  border-bottom: rgb(204, 204, 204) 1px solid;
+  box-shadow: 0px 2px 2px 0px #ddd;
+  height: 40px;
+}

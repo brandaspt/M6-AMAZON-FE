@@ -1,0 +1,15 @@
+.btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  background-color: transparent;
+  border: none;
+}
+
+.edit:hover {
+  background-color: rgb(255, 187, 60);
+}
+
+.delete:hover {
+  background-color: rgb(250, 61, 61);
+}

@@ -1,0 +1,19 @@
+.itemRow {
+  margin-top: 35px;
+  padding-bottom: 35px;
+  border-bottom: rgb(221, 221, 221) solid 2px;
+}
+
+.imgCol {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.imgCol img {
+  width: 100%;
+  object-fit: contain;
+}
+
+.reviewCard {
+  margin-top: 10px;
+}
