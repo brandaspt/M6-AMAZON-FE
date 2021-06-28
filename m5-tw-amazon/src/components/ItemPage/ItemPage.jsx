@@ -45,7 +45,11 @@ const ItemPage = (props) => {
           <Row className={styles.itemRow}>
             <Col xs={12} md={6} className={styles.imgCol}>
               <img
-                src="https://www.image-engineering.de/content/library/technotes/2018_03_05/Formate_Video.jpg"
+                src={
+                  product.cover
+                    ? product.cover
+                    : "https://www.image-engineering.de/content/library/technotes/2018_03_05/Formate_Video.jpg"
+                }
                 alt=""
               />
             </Col>
