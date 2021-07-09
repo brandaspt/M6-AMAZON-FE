@@ -1,18 +1,16 @@
-import { Col, Card, Button } from "react-bootstrap"
+import { Col, Card } from "react-bootstrap"
 import styles from "./cardSection.module.css"
 import { Link, useHistory } from "react-router-dom"
 import BtnEditDelete from "./../BtnsEditDelete/BtnEditDelete"
+import { BACKEND_URL } from "../../env.js"
 
 const ItemCard = (props) => {
   const urlHistory = useHistory()
 
   const deleteItem = async () => {
-    const response = await fetch(
-      `http://localhost:4444/products/${props._id}`,
-      {
-        method: "DELETE",
-      }
-    )
+    const response = await fetch(`${BACKEND_URL}/products/${props._id}`, {
+      method: "DELETE",
+    })
     if (response.ok) {
       props.refresh()
     } else {
@@ -27,8 +25,8 @@ const ItemCard = (props) => {
           <Card.Img
             variant="top"
             src={
-              props.cover
-                ? props.cover
+              props.imageURL
+                ? props.imageURL
                 : "https://m.media-amazon.com/images/I/71-6UDNkL4L._AC_UL480_FMwebp_QL65_.jpg"
             }
           />
@@ -41,9 +39,7 @@ const ItemCard = (props) => {
             </Card.Text>
             <Card.Text className={styles.desc}>{props.description}</Card.Text>
             <div className="d-flex">
-              <Card.Text className={styles.cardPrice}>
-                $ {props.price}
-              </Card.Text>
+              <Card.Text className={styles.cardPrice}>$ {props.price}</Card.Text>
               <BtnEditDelete
                 pushRight
                 type="edit"

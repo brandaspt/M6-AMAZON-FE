@@ -3,6 +3,7 @@ import ItemCard from "./ItemCard"
 import styles from "./cardSection.module.css"
 import { Link } from "react-router-dom"
 import { useState, useEffect } from "react"
+import { BACKEND_URL } from "../../env.js"
 
 const CardSection = (props) => {
   const [products, setProducts] = useState([])
@@ -12,7 +13,7 @@ const CardSection = (props) => {
   }, [])
 
   const fetchProducts = async () => {
-    const response = await fetch("http://localhost:4444/products")
+    const response = await fetch(BACKEND_URL + "/products")
     if (response.ok) {
       const data = await response.json()
       setProducts(data)
@@ -33,9 +34,7 @@ const CardSection = (props) => {
       <Container>
         <Row className={styles.itemRow}>
           {products.length !== 0 &&
-            products.map((p) => (
-              <ItemCard key={p._id} {...p} refresh={fetchProducts} />
-            ))}
+            products.map((p) => <ItemCard key={p._id} {...p} refresh={fetchProducts} />)}
         </Row>
       </Container>
     </div>

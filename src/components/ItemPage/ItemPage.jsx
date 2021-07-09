@@ -2,6 +2,7 @@ import { Container, Row, Col, Card, Form, Button } from "react-bootstrap"
 import { useRouteMatch } from "react-router"
 import styles from "./itempage.module.css"
 import { useEffect, useState } from "react"
+import { BACKEND_URL } from "../../env.js"
 
 const ItemPage = (props) => {
   const match = useRouteMatch()
@@ -15,9 +16,7 @@ const ItemPage = (props) => {
   }, [])
 
   const fetchProduct = async () => {
-    const response = await fetch(
-      `http://localhost:4444/products/${match.params.id}`
-    )
+    const response = await fetch(`${BACKEND_URL}/products/${match.params.id}`)
     if (response.ok) {
       const data = await response.json()
       setProduct(data)
@@ -27,12 +26,22 @@ const ItemPage = (props) => {
   }
 
   const fetchReviews = async () => {
-    const response = await fetch(
-      `http://localhost:4444/products/${match.params.id}/review`
-    )
+    const response = await fetch(`${BACKEND_URL}/reviews/${match.params.id}`)
     if (response.ok) {
       const data = await response.json()
       setReviews(data)
+    } else {
+      console.log("error fetching product")
+    }
+  }
+
+  const deleteReview = async (revId) => {
+    const response = await fetch(`${BACKEND_URL}/reviews/${revId}`, {
+      method: "DELETE",
+    })
+    if (response.ok) {
+      await fetchReviews()
+      console.log("ok")
     } else {
       console.log("error fetching product")
     }
@@ -46,8 +55,8 @@ const ItemPage = (props) => {
             <Col xs={12} md={6} className={styles.imgCol}>
               <img
                 src={
-                  product.cover
-                    ? product.cover
+                  product.imageURL
+                    ? product.imageURL
                     : "https://www.image-engineering.de/content/library/technotes/2018_03_05/Formate_Video.jpg"
                 }
                 alt=""
@@ -67,8 +76,10 @@ const ItemPage = (props) => {
             <Col>
               <div>
                 <h2 className="text-center mt-3">Reviews</h2>
-                {reviews &&
-                  reviews.map((r) => <ReviewCard key={r._id} {...r} />)}
+                {reviews.reviews &&
+                  reviews.reviews.map((r) => (
+                    <ReviewCard key={r._id} {...r} delete={(id) => deleteReview(id)} />
+                  ))}
                 <AddReview productId={product._id} refresh={fetchReviews} />
               </div>
             </Col>
@@ -83,7 +94,7 @@ export default ItemPage
 
 const ReviewCard = (props) => {
   return (
-    <Card className={styles.reviewCard}>
+    <Card className={styles.reviewCard} onClick={() => props.delete(props._id)}>
       <Card.Body className="d-flex">
         <div>{props.comment}</div>
         <div className="ml-auto">Rate: {props.rate}/5</div>
@@ -100,16 +111,13 @@ const AddReview = (props) => {
   }
 
   const postReview = async () => {
-    const response = await fetch(
-      `http://localhost:4444/products/${props.productId}/review`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(comment),
-      }
-    )
+    const response = await fetch(`${BACKEND_URL}/reviews/${props.productId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(comment),
+    })
     if (response.ok) {
       const data = await response.json()
       console.log(data)
