@@ -137,11 +137,11 @@ const NewEditItem = (props) => {
               </Form.Group>
             </Col>
             <Col xs={11}>
-              <Form.Group controlId="productName">
+              <Form.Group controlId="name">
                 <Form.Label>Product Name</Form.Label>
                 <Form.Control
                   placeholder="Mobile phone 3310"
-                  value={form.productName}
+                  value={form.name}
                   onChange={(e) => changeForm(e)}
                 />
               </Form.Group>
