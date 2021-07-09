@@ -75,7 +75,7 @@ const MyNavbar = (props) => {
 export default MyNavbar
 
 const SubNavBtn = (props) => (
-  <a className={`${styles.navLinkBtn} my-auto mx-2 d-block`} href="/">
+  <a className={`${styles.navLinkBtn} my-auto mx-2 ${props.className}`} href="/">
     {props.text}
   </a>
 )
@@ -91,8 +91,13 @@ const SubNav = (props) => {
           </div>
         </Nav.Link>
         <div className="d-flex align-items-center mr-auto">
-          {subNavBtns.map((text) => (
-            <SubNavBtn text={text} />
+          {subNavBtns.map((text, idx) => (
+            <SubNavBtn
+              text={text}
+              className={`d-none ${idx > 4 && idx < 8 && "d-md-block"} ${
+                idx >= 8 && idx < 13 && "d-lg-block"
+              }`}
+            />
           ))}
         </div>
         <div className={styles.imgBlock}>

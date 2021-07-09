@@ -3,6 +3,7 @@ import { useParams } from "react-router"
 import styles from "./newedititem.module.css"
 import { useEffect, useState } from "react"
 import { useHistory } from "react-router-dom"
+import { BACKEND_URL } from "../../env.js"
 
 const NewEditItem = (props) => {
   const params = useParams()
@@ -11,7 +12,7 @@ const NewEditItem = (props) => {
   const [addProduct, setAddProduct] = useState(null)
   const [file, setFile] = useState(null)
   const [form, setForm] = useState({
-    productName: "",
+    name: "",
     price: "",
     category: "",
     brand: "",
@@ -29,7 +30,7 @@ const NewEditItem = (props) => {
   }, [addProduct])
 
   const fetchProduct = async () => {
-    const response = await fetch(`http://localhost:4444/products/${params.id}`)
+    const response = await fetch(`${BACKEND_URL}/products/${params.id}`)
     if (response.ok) {
       const data = await response.json()
       setForm(data)
@@ -39,33 +40,12 @@ const NewEditItem = (props) => {
   }
 
   useEffect(() => {
-    Object.keys(params).length === 0
-      ? setAddProduct(true)
-      : setAddProduct(false)
+    Object.keys(params).length === 0 ? setAddProduct(true) : setAddProduct(false)
   }, [])
 
   const putProduct = async () => {
-    const response = await fetch(
-      `http://localhost:4444/products/${params.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      }
-    )
-    if (response.ok) {
-      const data = await response.json()
-      return data
-    } else {
-      console.log("error putting product")
-    }
-  }
-
-  const postProduct = async () => {
-    const response = await fetch("http://localhost:4444/products", {
-      method: "POST",
+    const response = await fetch(`${BACKEND_URL}/products/${params.id}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -75,29 +55,42 @@ const NewEditItem = (props) => {
       const data = await response.json()
       return data
     } else {
-      console.log("error posting product")
+      console.log("error putting product")
+    }
+  }
+
+  const postProduct = async () => {
+    try {
+      const response = await fetch(BACKEND_URL + "/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        return data
+      } else {
+        console.log("error posting product")
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
   const setImg = async (e) => {
     const [file, ...rest] = e.target.files
     const formData = new FormData()
-    formData.append("cover", file)
+    formData.append("prodImg", file)
     setFile(formData)
   }
 
   const postImage = async (id) => {
-    const response = await fetch(
-      "http://localhost:4444/products/" + id + "/upload",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(file),
-      }
-    )
+    const response = await fetch(BACKEND_URL + "/products/" + id + "/uploadImage", {
+      method: "POST",
+      body: file,
+    })
   }
 
   const handlePostPut = async (e) => {
@@ -108,7 +101,6 @@ const NewEditItem = (props) => {
     } else {
       product = await putProduct()
     }
-    console.log(product)
     if (file) {
       await postImage(product._id)
     }
@@ -118,9 +110,7 @@ const NewEditItem = (props) => {
   return (
     <Container>
       <div className={styles.form}>
-        <h1 className={styles.heading}>
-          {addProduct ? "Add Product" : "Edit Product"}
-        </h1>
+        <h1 className={styles.heading}>{addProduct ? "Add Product" : "Edit Product"}</h1>
         <Form onSubmit={(e) => handlePostPut(e)}>
           <Form.Row>
             <Col xs={1}>
@@ -138,11 +128,11 @@ const NewEditItem = (props) => {
               </Form.Group>
             </Col>
             <Col xs={11}>
-              <Form.Group controlId="productName">
+              <Form.Group controlId="name">
                 <Form.Label>Product Name</Form.Label>
                 <Form.Control
                   placeholder="Mobile phone 3310"
-                  value={form.productName}
+                  value={form.name}
                   onChange={(e) => changeForm(e)}
                 />
               </Form.Group>
@@ -181,9 +171,7 @@ const NewEditItem = (props) => {
               onChange={(e) => changeForm(e)}
             />
           </Form.Group>
-          <Button type="submit">
-            {addProduct ? "Add Product" : "Edit Product"}
-          </Button>
+          <Button type="submit">{addProduct ? "Add Product" : "Edit Product"}</Button>
         </Form>
       </div>
     </Container>
