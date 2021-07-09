@@ -70,7 +70,6 @@ const NewEditItem = (props) => {
       })
       if (response.ok) {
         const data = await response.json()
-        console.log({ data })
         return data
       } else {
         console.log("error posting product")
@@ -90,10 +89,6 @@ const NewEditItem = (props) => {
   const postImage = async (id) => {
     const response = await fetch(BACKEND_URL + "/products/" + id + "/uploadImage", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
       body: file,
     })
   }
@@ -102,18 +97,14 @@ const NewEditItem = (props) => {
     e.preventDefault()
     let product
     if (addProduct) {
-      console.log("post")
       product = await postProduct()
-      console.log({ product })
     } else {
-      console.log("put")
       product = await putProduct()
     }
-    // console.log(product)
-    // if (file) {
-    //   await postImage(product._id)
-    // }
-    // history.goBack()
+    if (file) {
+      await postImage(product._id)
+    }
+    history.goBack()
   }
 
   return (

@@ -76,7 +76,7 @@ const ItemPage = (props) => {
             <Col>
               <div>
                 <h2 className="text-center mt-3">Reviews</h2>
-                {reviews.reviews &&
+                {reviews?.reviews &&
                   reviews.reviews.map((r) => (
                     <ReviewCard key={r._id} {...r} delete={(id) => deleteReview(id)} />
                   ))}
