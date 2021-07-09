@@ -12,7 +12,7 @@ const NewEditItem = (props) => {
   const [addProduct, setAddProduct] = useState(null)
   const [file, setFile] = useState(null)
   const [form, setForm] = useState({
-    productName: "",
+    name: "",
     price: "",
     category: "",
     brand: "",
@@ -60,25 +60,30 @@ const NewEditItem = (props) => {
   }
 
   const postProduct = async () => {
-    const response = await fetch(BACKEND_URL + "/products", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    })
-    if (response.ok) {
-      const data = await response.json()
-      return data
-    } else {
-      console.log("error posting product")
+    try {
+      const response = await fetch(BACKEND_URL + "/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        console.log({ data })
+        return data
+      } else {
+        console.log("error posting product")
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
   const setImg = async (e) => {
     const [file, ...rest] = e.target.files
     const formData = new FormData()
-    formData.append("cover", file)
+    formData.append("prodImg", file)
     setFile(formData)
   }
 
@@ -89,7 +94,7 @@ const NewEditItem = (props) => {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify(file),
+      body: file,
     })
   }
 
@@ -97,15 +102,18 @@ const NewEditItem = (props) => {
     e.preventDefault()
     let product
     if (addProduct) {
+      console.log("post")
       product = await postProduct()
+      console.log({ product })
     } else {
+      console.log("put")
       product = await putProduct()
     }
-    console.log(product)
-    if (file) {
-      await postImage(product._id)
-    }
-    history.goBack()
+    // console.log(product)
+    // if (file) {
+    //   await postImage(product._id)
+    // }
+    // history.goBack()
   }
 
   return (

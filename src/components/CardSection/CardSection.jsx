@@ -17,6 +17,7 @@ const CardSection = (props) => {
     if (response.ok) {
       const data = await response.json()
       setProducts(data)
+      console.log(data)
     } else {
       console.log("error occured")
     }
