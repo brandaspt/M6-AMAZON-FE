@@ -1,21 +1,16 @@
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap"
 import { useRouteMatch } from "react-router"
 import styles from "./itempage.module.css"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { BACKEND_URL } from "../../env.js"
 
-const ItemPage = (props) => {
+const ItemPage = props => {
   const match = useRouteMatch()
 
   const [product, setProduct] = useState(null)
   const [reviews, setReviews] = useState(null)
 
-  useEffect(() => {
-    fetchProduct()
-    fetchReviews()
-  }, [])
-
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     const response = await fetch(`${BACKEND_URL}/products/${match.params.id}`)
     if (response.ok) {
       const data = await response.json()
@@ -23,9 +18,9 @@ const ItemPage = (props) => {
     } else {
       console.log("error fetching product")
     }
-  }
+  }, [match.params.id])
 
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     const response = await fetch(`${BACKEND_URL}/reviews/${match.params.id}`)
     if (response.ok) {
       const data = await response.json()
@@ -33,9 +28,14 @@ const ItemPage = (props) => {
     } else {
       console.log("error fetching product")
     }
-  }
+  }, [match.params.id])
 
-  const deleteReview = async (revId) => {
+  useEffect(() => {
+    fetchProduct()
+    fetchReviews()
+  }, [fetchProduct, fetchReviews])
+
+  const deleteReview = async revId => {
     const response = await fetch(`${BACKEND_URL}/reviews/${revId}`, {
       method: "DELETE",
     })
@@ -76,10 +76,7 @@ const ItemPage = (props) => {
             <Col>
               <div>
                 <h2 className="text-center mt-3">Reviews</h2>
-                {reviews?.reviews &&
-                  reviews.reviews.map((r) => (
-                    <ReviewCard key={r._id} {...r} delete={(id) => deleteReview(id)} />
-                  ))}
+                {reviews?.reviews && reviews.reviews.map(r => <ReviewCard key={r._id} {...r} delete={id => deleteReview(id)} />)}
                 <AddReview productId={product._id} refresh={fetchReviews} />
               </div>
             </Col>
@@ -92,7 +89,7 @@ const ItemPage = (props) => {
 
 export default ItemPage
 
-const ReviewCard = (props) => {
+const ReviewCard = props => {
   return (
     <Card className={styles.reviewCard} onClick={() => props.delete(props._id)}>
       <Card.Body className="d-flex">
@@ -103,10 +100,10 @@ const ReviewCard = (props) => {
   )
 }
 
-const AddReview = (props) => {
+const AddReview = props => {
   const [comment, setComment] = useState({ comment: "", rate: 1 })
 
-  const changeData = (e) => {
+  const changeData = e => {
     setComment({ ...comment, [e.target.id]: e.target.value })
   }
 
@@ -127,32 +124,19 @@ const AddReview = (props) => {
     }
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault()
     await postReview()
   }
 
   return (
-    <Form onSubmit={(e) => handleSubmit(e)}>
+    <Form onSubmit={e => handleSubmit(e)}>
       <Row className={styles.addCommRow}>
         <Col xs={12} md={9}>
-          <Form.Control
-            placeholder="Your comment"
-            id="comment"
-            value={comment.comment}
-            onChange={(e) => changeData(e)}
-          />
+          <Form.Control placeholder="Your comment" id="comment" value={comment.comment} onChange={e => changeData(e)} />
         </Col>
         <Col xs={6} md={1}>
-          <Form.Control
-            type="number"
-            id="rate"
-            placeholder={1}
-            min={1}
-            max={5}
-            value={comment.rate}
-            onChange={(e) => changeData(e)}
-          />
+          <Form.Control type="number" id="rate" placeholder={1} min={1} max={5} value={comment.rate} onChange={e => changeData(e)} />
         </Col>
         <Col xs={6} md={2} className="d-flex justify-content-end">
           <Button type="submit">Add Comment</Button>

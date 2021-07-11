@@ -22,16 +22,12 @@ const subNavBtns = [
   "PC & Video Games",
 ]
 
-const MyNavbar = (props) => {
+const MyNavbar = props => {
   return (
     <div>
       <Navbar variant="dark" className={styles.navbar}>
         <Navbar.Brand as={Link} to="/" className="d-flex">
-          <img
-            className={styles.logo}
-            src="https://pngimg.com/uploads/amazon/amazon_PNG11.png"
-            alt=""
-          />
+          <img className={styles.logo} src="https://pngimg.com/uploads/amazon/amazon_PNG11.png" alt="" />
           <div className={styles.logoText}>.co.uk</div>
         </Navbar.Brand>
         <div className={`${styles.addressBlock} d-flex`}>
@@ -50,10 +46,7 @@ const MyNavbar = (props) => {
           </Button>
         </Form>
         <div className={styles.flag}>
-          <img
-            src="https://cdn.britannica.com/25/4825-004-F1975B92/Flag-United-Kingdom.jpg"
-            alt=""
-          />
+          <img src="https://cdn.britannica.com/25/4825-004-F1975B92/Flag-United-Kingdom.jpg" alt="" />
         </div>
         <div className={styles.account}>
           <div>Hello, Sign in</div>
@@ -74,13 +67,13 @@ const MyNavbar = (props) => {
 
 export default MyNavbar
 
-const SubNavBtn = (props) => (
+const SubNavBtn = props => (
   <a className={`${styles.navLinkBtn} my-auto mx-2 ${props.className}`} href="/">
     {props.text}
   </a>
 )
 
-const SubNav = (props) => {
+const SubNav = props => {
   return (
     <div className={styles.subnav}>
       <div className="d-flex">
@@ -93,18 +86,14 @@ const SubNav = (props) => {
         <div className="d-flex align-items-center mr-auto">
           {subNavBtns.map((text, idx) => (
             <SubNavBtn
+              key={idx}
               text={text}
-              className={`d-none ${idx > 4 && idx < 8 && "d-md-block"} ${
-                idx >= 8 && idx < 13 && "d-lg-block"
-              }`}
+              className={`d-none ${idx > 4 && idx < 8 && "d-md-block"} ${idx >= 8 && idx < 13 && "d-lg-block"}`}
             />
           ))}
         </div>
         <div className={styles.imgBlock}>
-          <img
-            src="https://images-eu.ssl-images-amazon.com/images/G/02/Gateway/NPA/Deals_SWM._CB485930216_.png"
-            alt=""
-          />
+          <img src="https://images-eu.ssl-images-amazon.com/images/G/02/Gateway/NPA/Deals_SWM._CB485930216_.png" alt="" />
         </div>
       </div>
     </div>

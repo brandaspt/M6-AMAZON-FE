@@ -1,5 +1,4 @@
 import "bootstrap/dist/css/bootstrap.min.css"
-import "./App.css"
 import CardSection from "./components/CardSection/CardSection"
 import MyNavbar from "./components/Navbar/MyNavbar"
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
